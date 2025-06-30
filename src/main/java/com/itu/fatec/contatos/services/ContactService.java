@@ -44,16 +44,11 @@ public class ContactService {
     public void update(Contact contact, Long id) {
         Contact aux = repository.getReferenceById(id);
 
-        // Validação que já é útil
-        if (contact.getCategory() == null || contact.getCategory().getId() == null) { // Adicione .getId() == null para
-                                                                                      // validar que o ID da categoria
-                                                                                      // existe
+        if (contact.getCategory() == null || contact.getCategory().getId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category and Category ID can not be empty");
         }
 
-        // Busca a categoria gerenciada pelo JPA antes de associar
-        // Isso é importante para evitar problemas de "detached entity"
-        Category category = categoryService.getById(contact.getCategory().getId()); // Busca a categoria persistida
+        Category category = categoryService.getById(contact.getCategory().getId());
 
         aux.setName(contact.getName());
         aux.setLastname(contact.getLastname());
@@ -62,13 +57,10 @@ public class ContactService {
         aux.setEmail(contact.getEmail());
         aux.setDatebirth(contact.getDatebirth());
         aux.setAddress(contact.getAddress());
-        // Remova a linha abaixo, pois 'aux.setCategory(category);' já faz isso
-        // corretamente.
-        // aux.setCategory(contact.getCategory());
         aux.setNote(contact.getNote());
-        aux.setCategory(category); // Use o objeto Category buscado, não o que veio da requisição diretamente
+        aux.setCategory(category);
 
-        repository.save(aux); // O método save atualizará a entidade 'aux'
+        repository.save(aux);
     }
 
     public void delete(Long id) {
